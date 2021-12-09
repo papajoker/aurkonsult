@@ -1,0 +1,46 @@
+pkgname=aurkonsult
+pkgver=r1.b04d325.20211209
+pkgrel=1
+arch=('x86_64')
+pkgdesc="Aur Explorator - Qt Gui"
+url="https://github.com/papajoker/aurkonsult"
+depends=('python-pyqt5')
+
+source=("app::git+${url}#branch=master")
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "$srcdir/app"
+  printf "r%s.%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)" "$(date +%Y%m%d)"
+}
+
+setdesktop() {
+string=$(cat << EOF
+[Desktop Entry]
+Name=AurKonsult
+Comment=List aur packages in Qt Gui
+Path=/usr/share/${pkgname}/
+Exec=/usr/share/${pkgname}/aurk
+Terminal=false
+Type=Application
+Icon=/usr/share/icons/hicolor/scalable/apps/aurkonsult.svg
+Categories=System;
+Keywords=aur;package;yay;
+
+EOF
+)
+echo "$string" > "$1"
+}
+
+package() {
+    cd "${srcdir}/app"
+    install -d "${pkgdir}/usr/share/icons/hicolor/scalable/apps/"
+    install -d "${pkgdir}/usr/share/applications/"
+    install -d "${pkgdir}/usr/share/${pkgname}/aurkonsult"
+    
+    install -m755 aurkonsult.py "${pkgdir}/usr/share/${pkgname}/aurk"
+    cp -r aurkonsult/* "${pkgdir}/usr/share/${pkgname}/aurkonsult"
+    cp -r aurkonsult.svg "${pkgdir}/usr/share/icons/hicolor/scalable/apps/"
+    setdesktop "${pkgdir}/usr/share/applications/${pkgname}.desktop"
+}
+
