@@ -35,7 +35,6 @@ if __name__ == "__main__":
         Path(Path().home() / ".local/share/applications/aur-db.desktop").write_text(
             content
         )
-        # subprocess.run("/usr/bin/update-desktop-database --quiet", shell=True) only with sudo
 
     if "-h" in sys.argv or "--help" in sys.argv:
         print(
@@ -69,37 +68,3 @@ if __name__ == "__main__":
         exit(0)
 
     run(config)
-
-"""
-TODO 
-param packageName == do to page "packageName"
-
-TODO graph best dependencies
-https://github.com/PyQt5/PyQt/tree/master/QtChart
-
-TODO:
-pas d'Architecture ???
-
-FIXED not update database in "check" page ... https://forum.manjaro.org/t/beta-gui-aur-explorer-for-plasma/92001/3
-FIXED PackageBase not always exists https://forum.manjaro.org/t/beta-gui-aur-explorer-for-plasma/92001/9
-
-TODO ? action exec copy cmd in clipboard :
-org.kde.klipper /klipper org.kde.klipper.klipper.setClipboardContents 'yay -S pkg.Name'
-
-TODO ?
-not use python urllib ? but Qt modules ...
-https://zetcode.com/pyqt/qnetworkaccessmanager/
-https://programtalk.com/python-examples/PyQt5.QtNetwork.QNetworkRequest/
-
-TODO ?
-créer fichier test pour comparer Qt / python libs ...
-read file line by line...
-https://srinikom.github.io/pyside-docs/PySide/QtCore/QFile.html
-https://stackoverflow.com/questions/5444959/read-a-text-file-line-by-line-in-qt/48038850#48038850
-https://stackoverflow.com/questions/47336886/qt-program-to-read-text-sees-only-one-line-in-multi-line-file
-http://tvaira.free.fr/dev/qt/faq-qt.html#comment-lire-des-donn%C3%A9es-dans-un-fichier-csv
-
-TODO ... lang
-https://www.programcreek.com/python/?code=Scille%2Fparsec-cloud%2Fparsec-cloud-master%2Fparsec%2Fcore%2Fgui%2Flang.py#
-
-"""
