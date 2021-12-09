@@ -1,6 +1,7 @@
 """
-speed translations
+translations
 """
+import gettext
 
 __LANG_USER__ = ""
 
@@ -8,6 +9,7 @@ def set_lang(lg):
     global __LANG_USER__
     __LANG_USER__ = lg
 
+'''
 def gettext_gettext(string: str) -> str:
     """ translate texte if in dico"""
     lang = __LANG_USER__
@@ -143,3 +145,8 @@ def gettext_gettext(string: str) -> str:
 
 
 _ = gettext_gettext
+'''
+
+
+gettext.find("aurkonsult", "locales")
+_ = gettext.gettext

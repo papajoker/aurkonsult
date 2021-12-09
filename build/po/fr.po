@@ -1,0 +1,207 @@
+# Translation of aurkonsult
+# Copyright (C) 2021 papajoke
+# papajoke <EMAIL@ADDRESS>, 2021.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: aurkonsults\n"
+"POT-Creation-Date: 2021-12-09 21:20+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: papajoke <EMAIL@ADDRESS>\n"
+"Language-Team: French\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+"Language: fr\n"
+
+
+#: ../aurkonsult/gui/main.py:37
+msgid "Exit"
+msgstr "Quitter"
+
+#: ../aurkonsult/gui/main.py:40
+msgid "Update"
+msgstr "Mettre à jour"
+
+#: ../aurkonsult/gui/main.py:43 ../aurkonsult/gui/main.py:184
+msgid "New packages"
+msgstr "Nouveaux paquets"
+
+#: ../aurkonsult/gui/main.py:47
+msgid "Check my aur packages"
+msgstr "Contrôler les paquets étrangers"
+
+#: ../aurkonsult/gui/main.py:51 ../aurkonsult/gui/main.py:168
+#: ../aurkonsult/gui/main.py:242 ../aurkonsult/gui/main.py:386
+msgid "Packages"
+msgstr "Paquets"
+
+#: ../aurkonsult/gui/main.py:54
+msgid "Info"
+msgstr "Information"
+
+#: ../aurkonsult/gui/main.py:57 ../aurkonsult/gui/widgets.py:209
+msgid "Configuration"
+msgstr "Configuration"
+
+#: ../aurkonsult/gui/main.py:99
+msgid "AUR list"
+msgstr "AUR exploration"
+
+#: ../aurkonsult/gui/main.py:115
+msgid "No new database available"
+msgstr "Pas de mise à jour disponible"
+
+#: ../aurkonsult/gui/main.py:117
+msgid "OK new version"
+msgstr "Nouvelle version installée"
+
+#: ../aurkonsult/gui/main.py:122
+msgid "Database update"
+msgstr "Mise à jour de la base de donnée"
+
+#: ../aurkonsult/gui/main.py:123
+msgid "End Update"
+msgstr "Mise à jour terminée"
+
+#: ../aurkonsult/gui/main.py:147
+msgid "Check local packages"
+msgstr "Contrôle des paquets étrangers"
+
+#: ../aurkonsult/gui/main.py:253
+msgid "Search"
+msgstr "Recherche"
+
+#: ../aurkonsult/gui/main.py:256
+msgid "Package name"
+msgstr "Nom du paquet"
+
+#: ../aurkonsult/gui/main.py:257
+msgid "Package name and Description"
+msgstr "Nom ou description du paquet"
+
+#: ../aurkonsult/gui/main.py:271 ../aurkonsult/gui/main.py:379
+msgid "Dependencies"
+msgstr "Dépendances"
+
+#: ../aurkonsult/gui/main.py:278
+msgid "Filter"
+msgstr "Filtre"
+
+#: ../aurkonsult/gui/main.py:333
+msgid "Return"
+msgstr "retour"
+
+#: ../aurkonsult/gui/main.py:341 ../aurkonsult/gui/widgets.py:240
+msgid "Load"
+msgstr "Charger"
+
+#: ../aurkonsult/gui/main.py:356
+msgid "Name"
+msgstr "Nom"
+
+#: ../aurkonsult/gui/main.py:363
+msgid "Last Modified"
+msgstr "Dernière modification"
+
+#: ../aurkonsult/gui/main.py:365
+msgid "First Submitted"
+msgstr "Première soumission"
+
+#: ../aurkonsult/gui/main.py:371
+msgid "Url project"
+msgstr "Adresse web du projet"
+
+#: ../aurkonsult/gui/main.py:373
+msgid "Aur Url"
+msgstr "Adresse web AUR"
+
+#: ../aurkonsult/gui/main.py:381
+msgid "Optional"
+msgstr "Optionnel"
+
+#: ../aurkonsult/gui/main.py:384
+msgid "Maintainer"
+msgstr "Mainteneur"
+
+#: ../aurkonsult/gui/main.py:390
+msgid "Votes"
+msgstr "Votes"
+
+#: ../aurkonsult/gui/main.py:392
+msgid "Popularity"
+msgstr "Popularité"
+
+#: ../aurkonsult/gui/main.py:397
+msgid "Make Dependencies"
+msgstr "Dépendances de construction"
+
+#: ../aurkonsult/gui/main.py:399
+msgid "Provide"
+msgstr "Fournit"
+
+#: ../aurkonsult/gui/main.py:401
+msgid "Licence"
+msgstr ""
+
+#: ../aurkonsult/gui/main.py:405 ../aurkonsult/gui/widgets.py:223
+msgid "Comments"
+msgstr "Commentaires"
+
+#: ../aurkonsult/gui/main.py:414
+msgid "Get History"
+msgstr "Télécharger l'historique"
+
+#: ../aurkonsult/gui/main.py:417 ../aurkonsult/gui/widgets.py:224
+msgid "History"
+msgstr "Historique"
+
+#: ../aurkonsult/gui/main.py:421
+msgid "package Informations"
+msgstr "Informations sur le paquet"
+
+#: ../aurkonsult/gui/main.py:572
+msgid "Open browser"
+msgstr "Ouvrir un navigateur web"
+
+#: ../aurkonsult/gui/main.py:605
+msgid "Information"
+msgstr "Information"
+
+#: ../aurkonsult/gui/main.py:609
+msgid "Install in Konsole"
+msgstr "Installer via konsole"
+
+#: ../aurkonsult/gui/widgets.py:222
+msgid "with dependencies"
+msgstr "avec dépendances"
+
+#: ../aurkonsult/gui/widgets.py:237
+msgid "Extend Database"
+msgstr "Base de donnée étendue"
+
+#: ../aurkonsult/gui/widgets.py:243
+msgid "Can load"
+msgstr "Peut télécharger"
+
+#: ../aurkonsult/gui/widgets.py:246
+msgid "Propose app for install"
+msgstr "Application pour installer"
+
+#: ../aurkonsult/gui/widgets.py:249
+msgid "Save Database in"
+msgstr "Sauvegarder la base de donnée vers"
+
+#: ../aurkonsult/gui/widgets.py:252
+msgid "Preferences"
+msgstr "Préférences"
+
+#: ../aurkonsult/gui/widgets.py:257
+msgid "Save this config"
+msgstr "Sauvegarder ces préférences"
+
+#: ../aurkonsult/gui/widgets.py:258
+msgid "Changes will be effective after reloading"
+msgstr "Changements au prochain redémarrage"
+

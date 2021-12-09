@@ -1,5 +1,5 @@
 pkgname=aurkonsult
-pkgver=r1.b04d325.20211209
+pkgver=r2.a4bb609.20211209
 pkgrel=1
 arch=('x86_64')
 pkgdesc="Aur Explorator - Qt Gui"
@@ -42,5 +42,12 @@ package() {
     cp -r aurkonsult/* "${pkgdir}/usr/share/${pkgname}/aurkonsult"
     cp -r aurkonsult.svg "${pkgdir}/usr/share/icons/hicolor/scalable/apps/"
     setdesktop "${pkgdir}/usr/share/applications/${pkgname}.desktop"
-}
 
+    cd build/po
+    for lang in $(ls *.po); do
+        echo "lang: $lang"
+        lang=${lang::-3}
+        install -dm755 $pkgdir/usr/share/locale/${lang//_/-}/LC_MESSAGES
+        msgfmt -c -o $pkgdir/usr/share/locale/${lang//_/-}/LC_MESSAGES/$pkgname.mo $lang.po
+    done
+}
