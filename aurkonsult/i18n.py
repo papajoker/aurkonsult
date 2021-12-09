@@ -147,6 +147,5 @@ def gettext_gettext(string: str) -> str:
 _ = gettext_gettext
 '''
 
-
-gettext.find("aurkonsult", "locales")
+gettext.textdomain("aurkonsult")
 _ = gettext.gettext
