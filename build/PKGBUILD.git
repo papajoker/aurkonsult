@@ -2,7 +2,7 @@ pkgname=aurkonsult
 pkgver=r4.3671b3d.20211209
 pkgrel=1
 arch=('x86_64')
-pkgdesc="Aur Explorator - Qt Gui without rpc"
+pkgdesc="Aur Explorator - Qt Gui without rpc for plasma"
 url="https://github.com/papajoker/aurkonsult"
 depends=('python-pyqt5')
 

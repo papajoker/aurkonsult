@@ -17,7 +17,6 @@ except ImportError:
     exit(13)
 
 
-
 import aurkonsult
 
 from aurkonsult import _, set_lang
@@ -34,13 +33,19 @@ class WinMain(QtWidgets.QMainWindow):
         super(WinMain, self).__init__()
         self.threadpool = QtCore.QThreadPool()
 
-        exitAction = QtWidgets.QAction(ICONS.load(ICONS.close), _("Exit") + " (Ctrl+X)", self)
+        exitAction = QtWidgets.QAction(
+            ICONS.load(ICONS.close), _("Exit") + " (Ctrl+X)", self
+        )
         exitAction.triggered.connect(self.close)
         exitAction.setShortcut(QtGui.QKeySequence("Ctrl+x"))
-        updateAction = QtWidgets.QAction(ICONS.load(ICONS.update), _("Update") + " (Ctrl+U)", self)
+        updateAction = QtWidgets.QAction(
+            ICONS.load(ICONS.update), _("Update") + " (Ctrl+U)", self
+        )
         updateAction.triggered.connect(self.onUpdate)
         updateAction.setShortcut(QtGui.QKeySequence("Ctrl+u"))
-        newAction = QtWidgets.QAction(ICONS.load(ICONS.new), _("New packages") + " (Ctrl+N)", self)
+        newAction = QtWidgets.QAction(
+            ICONS.load(ICONS.new), _("New packages") + " (Ctrl+N)", self
+        )
         newAction.triggered.connect(self.onNew)
         newAction.setShortcut(QtGui.QKeySequence("Ctrl+n"))
         checkAction = QtWidgets.QAction(
@@ -48,22 +53,24 @@ class WinMain(QtWidgets.QMainWindow):
         )
         checkAction.triggered.connect(self.onCheck)
         checkAction.setShortcut(QtGui.QKeySequence("Ctrl+c"))
-        listAction = QtWidgets.QAction(ICONS.load(ICONS.list), _("Packages") + " (Ctrl+L)", self)
+        listAction = QtWidgets.QAction(
+            ICONS.load(ICONS.list), _("Packages") + " (Ctrl+L)", self
+        )
         listAction.triggered.connect(self.onList)
         listAction.setShortcut(QtGui.QKeySequence("Ctrl+l"))
-        infoAction = QtWidgets.QAction(ICONS.load(ICONS.info), _("Info") + " (Ctrl+I)", self)
+        infoAction = QtWidgets.QAction(
+            ICONS.load(ICONS.info), _("Info") + " (Ctrl+I)", self
+        )
         infoAction.triggered.connect(self.onInfo)
         infoAction.setShortcut(QtGui.QKeySequence("Ctrl+i"))
-        configAction = QtWidgets.QAction(ICONS.load(ICONS.application), _("Configuration") + " (Ctrl+C)", self)
+        configAction = QtWidgets.QAction(
+            ICONS.load(ICONS.application), _("Configuration") + " (Ctrl+C)", self
+        )
         configAction.triggered.connect(self.onConfig)
         configAction.setShortcut(QtGui.QKeySequence("Ctrl+c"))
 
-        QtWidgets.QShortcut( 'Ctrl++', self).activated.connect(
-            lambda: self.onZoom(1)
-        )
-        QtWidgets.QShortcut( 'Ctrl+-', self).activated.connect(
-            lambda: self.onZoom(0)
-        )
+        QtWidgets.QShortcut("Ctrl++", self).activated.connect(lambda: self.onZoom(1))
+        QtWidgets.QShortcut("Ctrl+-", self).activated.connect(lambda: self.onZoom(0))
 
         toolbar = QtWidgets.QToolBar("Update", self)
         self.addToolBar(QtCore.Qt.RightToolBarArea, toolbar)
@@ -78,7 +85,9 @@ class WinMain(QtWidgets.QMainWindow):
         btn.setDefaultAction(infoAction)
         toolbar.addWidget(btn)
         if Configuration.KONSOLE_INSTALLED:
-            installAction = QtWidgets.QAction(ICONS.load(ICONS.install), "Install", self)
+            installAction = QtWidgets.QAction(
+                ICONS.load(ICONS.install), "Install", self
+            )
             installAction.triggered.connect(self.onInstall)
             btn = widgets.dropButton(toolbar)
             btn.setDefaultAction(installAction)
@@ -120,8 +129,9 @@ class WinMain(QtWidgets.QMainWindow):
         QtWidgets.QMessageBox.information(
             None,
             _("Database update"),
-            _("End Update") + "...\n\n" +
-            f"{return_code if return_code != 200 else ''} {txt}\n",
+            _("End Update")
+            + "...\n\n"
+            + f"{return_code if return_code != 200 else ''} {txt}\n",
         )
 
     def onZoom(self, direction):
@@ -139,7 +149,9 @@ class WinMain(QtWidgets.QMainWindow):
 
     def onCheck(self):
         if isinstance(self.win.currentModel, models.packageModel):
-            self.win.sourceView.setItemDelegate(models.checkDelegate(self.win.sourceView))
+            self.win.sourceView.setItemDelegate(
+                models.checkDelegate(self.win.sourceView)
+            )
             self.win.findGroupBox.hide()
             self.win.loadPackagesCheck()
         # else:
@@ -154,10 +166,9 @@ class WinMain(QtWidgets.QMainWindow):
         try:
             self.win.sourceView.setItemDelegate(
                 models.listDelegate(
-                    self.win.sourceView,
-                    self.win.config.time_since_update
-                    )
+                    self.win.sourceView, self.win.config.time_since_update
                 )
+            )
             self.win.loadPackages(False)
             self.win.sourceView.setModel(self.win.proxyModel)
             self.win.filterPatternLineEdit.setText("")
@@ -173,7 +184,9 @@ class WinMain(QtWidgets.QMainWindow):
     def onNew(self):
         # if isinstance(self.win.currentModel, checkModel):
         #    return
-        self.win.sourceView.setItemDelegate(models.listDelegate(self.win.sourceView, self.win.config.time_since_update))
+        self.win.sourceView.setItemDelegate(
+            models.listDelegate(self.win.sourceView, self.win.config.time_since_update)
+        )
         self.win.loadPackages(False)
         self.win.filterPatternLineEdit.setText("")
         self.win.currentModel.filterNews(self.win.config.time_since_update)
@@ -198,10 +211,10 @@ class WinMain(QtWidgets.QMainWindow):
         if not self.win.index.isValid():
             return
         if pkg := self.win.index.internalPointer():
-            widgets.run_konsole(pkg.Name, "")
+            widgets.run_konsole(pkg.name, "")
 
     def onConfig(self):
-        """ dialog app preferences """
+        """dialog app preferences"""
         dialog_box = widgets.ConfigDialog(self)
         if dialog_box.exec():
             pass
@@ -235,7 +248,9 @@ class Window(QtWidgets.QWidget):
         self.sourceView.doubleClicked.connect(self.on_doubleClicked)
         self.sourceView.clicked.connect(self.on_clicked)
         self.sourceView.customContextMenuRequested.connect(self.onContextTree)
-        self.sourceView.setItemDelegate(models.listDelegate(self.sourceView, self.config.time_since_update))
+        self.sourceView.setItemDelegate(
+            models.listDelegate(self.sourceView, self.config.time_since_update)
+        )
 
         sourceLayout = QtWidgets.QHBoxLayout()
         sourceLayout.addWidget(self.sourceView)
@@ -250,7 +265,7 @@ class Window(QtWidgets.QWidget):
         self.completer.setModelSorting(True)
         # self.completer.setFilterMode(QtCore.Qt.MatchFlag.MatchContains)    # start by is best
         self.filterPatternLineEdit.setCompleter(self.completer)
-        filterPatternLabel = QtWidgets.QLabel(_("Search")+ ":")
+        filterPatternLabel = QtWidgets.QLabel(_("Search") + ":")
         filterPatternLabel.setBuddy(self.filterPatternLineEdit)
         self.filterSyntaxComboBox = QtWidgets.QComboBox()
         self.filterSyntaxComboBox.addItem(_("Package name"), 0)
@@ -328,7 +343,7 @@ class Window(QtWidgets.QWidget):
         self.form["Name"].setReadOnly(True)
         self.form["Version"].setReadOnly(True)
 
-        btn = QtWidgets.QPushButton("", self) # ↩
+        btn = QtWidgets.QPushButton("", self)  # ↩
         btn.setFlat(True)
         btn.setToolTip(_("Return") + " (Ctrl+R)")
         btn.setShortcut(QtGui.QKeySequence("Ctrl+R"))
@@ -411,10 +426,10 @@ class Window(QtWidgets.QWidget):
             btnHistory = QtWidgets.QPushButton("", self)
             btnHistory.setFlat(True)
             btnHistory.setIcon(ICONS.load(ICONS.download))
-            btnHistory.setToolTip(_("Get History") +" (Ctrl+H)")
+            btnHistory.setToolTip(_("Get History") + " (Ctrl+H)")
             btnHistory.setShortcut(QtGui.QKeySequence("Ctrl+H"))
             btnHistory.clicked.connect(self.onLoadPkgHistory)
-            row = setLabel(row, 0, _("History")+ ":")
+            row = setLabel(row, 0, _("History") + ":")
             grid.addWidget(self.form["histories"], row, 1, 1, 2)
             grid.addWidget(btnHistory, row, 3, QtCore.Qt.AlignLeft)
 
@@ -457,7 +472,7 @@ class Window(QtWidgets.QWidget):
         if not self.index.isValid():
             return
         pkg = self.index.internalPointer()
-        if not pkg['Name']:
+        if not pkg.name:
             return
         QtWidgets.QApplication.instance().setOverrideCursor(
             QtGui.QCursor(QtCore.Qt.WaitCursor)
@@ -466,17 +481,15 @@ class Window(QtWidgets.QWidget):
             dir_clone = "/tmp/aurkonsult/gitclone"
             shutil.rmtree(dir_clone, ignore_errors=True)
             cmd = (
-                f"git clone -qn https://aur.archlinux.org/{pkg['Name']}.git {dir_clone} && cd {dir_clone};"
+                f"git clone -qn https://aur.archlinux.org/{pkg.name}.git {dir_clone} && cd {dir_clone};"
                 "git log --pretty=format:'%ad | %s' --date=short;"
             )
-            print(cmd)
+            # print(cmd)
             proc = subprocess.run(cmd, shell=True, capture_output=True, text=True)
             if proc.returncode == 0:
-                print(proc.stdout)
+                # print(proc.stdout)
                 self.form["histories"].clear()
-                self.form["histories"].addItems(
-                    (i for i in proc.stdout.split("\n"))
-                )
+                self.form["histories"].addItems((i for i in proc.stdout.split("\n")))
         finally:
             QtWidgets.QApplication.instance().restoreOverrideCursor()
 
@@ -488,13 +501,13 @@ class Window(QtWidgets.QWidget):
         tmp_file = "/tmp/PKGBUILD"
         # print(pkg)
         print(
-            f"wget: https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h={pkg['Name']}"
+            f"wget: https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h={pkg.name}"
         )
-        if pkg['Name']:
+        if pkg.name:
             req = request.Request(
-                f"https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h={pkg['Name']}"
+                f"https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h={pkg.name}"
             )
-            #req.add_header("User-Agent", f"'User-Agent': '{_get_user_agent()}'")
+            # req.add_header("User-Agent", f"'User-Agent': '{_get_user_agent()}'")
             try:
                 with request.urlopen(req, timeout=2) as response:
                     content = response.read()
@@ -507,15 +520,15 @@ class Window(QtWidgets.QWidget):
     def populate_Info(self, pkg: Package):
         """set values in page Package Infos"""
         is_present = " ✅ (Installed)" if pkg.is_installed() else ""
-        self.form["Name"].setText(f"{pkg.Name}    {is_present}")
-        self.form["Version"].setText(pkg.Version)
-        self.form["PackageBase"].setText(pkg.PackageBase)
-        self.form["Description"].setText(pkg.Description)
-        self.form["Maintainer"].setText(pkg["Maintainer"])
+        self.form["Name"].setText(f"{pkg.name}    {is_present}")
+        self.form["Version"].setText(pkg.version)
+        self.form["PackageBase"].setText(pkg.package_base)
+        self.form["Description"].setText(pkg.description)
+        self.form["Maintainer"].setText(pkg.maintainer)
         self.form["URL"].setText(f"{pkg:URL}")
         self.form["PKGBUILD"].setText(f"{pkg:PKGBUILD}")
         self.form["Aur"].setText(f"{pkg:Aur}")
-        self.form["NumVotes"].setText(str(pkg["NumVotes"]))
+        self.form["NumVotes"].setText(str(pkg.num_votes))
         self.form["Popularity"].setText(f"{pkg:Popularity}")
         self.form["LastModified"].setText(
             f"{pkg:LastModified} <i>&nbsp;</i> {pkg:OutOfDate}"
@@ -525,29 +538,29 @@ class Window(QtWidgets.QWidget):
         self.form["MaintainerList"].clear()
         self.form["MaintainerList"].addItems(
             sorted(
-                p.Name
+                p.name
                 for p in self.currentModel._origin
-                if p.Maintainer == pkg.Maintainer
+                if p.maintainer == pkg.maintainer
             )
         )
         self.form["Dependencies"].clear()
-        self.form["Dependencies"].addItems(sorted(pkg.Depends))
+        self.form["Dependencies"].addItems(sorted(pkg.depends))
         self.form["OptDepends"].clear()
-        self.form["OptDepends"].addItems(sorted(pkg.OptDepends))
+        self.form["OptDepends"].addItems(sorted(pkg.opt_depends))
         self.form["MakeDepends"].clear()
-        self.form["MakeDepends"].addItems(sorted(pkg.MakeDepends))
+        self.form["MakeDepends"].addItems(sorted(pkg.make_depends))
         self.form["Licences"].clear()
-        self.form["Licences"].addItems(pkg.License)
+        self.form["Licences"].addItems(pkg.license)
         self.form["Provides"].clear()
-        self.form["Provides"].addItems(sorted(pkg.Provides))
+        self.form["Provides"].addItems(sorted(pkg.provides))
         self.form["histories"].clear()
 
         # get last comments: ?
         if self.config.attributes["comment"]:
             self.form["Comments"].clear()
             url = "https://aur.archlinux.org/packages/"
-            req = request.Request(f"{url}{pkg.Name}/")
-            #req.add_header("User-Agent", f"'User-Agent': '{_get_user_agent()}'")
+            req = request.Request(f"{url}{pkg.name}/")
+            # req.add_header("User-Agent", f"'User-Agent': '{_get_user_agent()}'")
             try:
                 with request.urlopen(req, timeout=2) as response:
                     for line in response:
@@ -564,7 +577,7 @@ class Window(QtWidgets.QWidget):
             return
 
         if index.column() == models.packageModel.ID_URL:
-            url = index.internalPointer()["URL"]
+            url = index.internalPointer()["url"]
             if url and url.startswith("http"):
                 print("Go to:", url)
                 if QtWidgets.QMessageBox.Yes == QtWidgets.QMessageBox.question(
@@ -580,7 +593,7 @@ class Window(QtWidgets.QWidget):
         if not index.isValid():
             return
         pkg = index.internalPointer()
-        if pkg["Version"] == "":
+        if pkg.version == "":
             # local package in check page, is not in aur database
             return
         self.index = self.sourceView.currentIndex()
@@ -598,14 +611,14 @@ class Window(QtWidgets.QWidget):
         pkg: Package = index.internalPointer()
 
         menu = QtWidgets.QMenu()
-        notUsed = menu.addAction(pkg.Name)
+        notUsed = menu.addAction(pkg.name)
         notUsed.setEnabled(False)
         menu.addSeparator()
 
         aInfo = menu.addAction(_("Information"))
         aInstall = None
-        #print(pkg)
-        if len(pkg.Version) > 1 and Configuration.KONSOLE_INSTALLED:
+        # print(pkg)
+        if len(pkg.version) > 1 and Configuration.KONSOLE_INSTALLED:
             aInstall = menu.addAction(_("Install in Konsole"))
 
         action = menu.exec_(self.sourceView.mapToGlobal(point))
@@ -618,7 +631,7 @@ class Window(QtWidgets.QWidget):
             self.tabs.setCurrentIndex(1)
 
         if action == aInstall:
-            widgets.run_konsole(pkg.Name, "")
+            widgets.run_konsole(pkg.name, "")
 
     def textFilterChanged(self):
         if not isinstance(self.currentModel, models.packageModel):
@@ -645,7 +658,7 @@ class Window(QtWidgets.QWidget):
             )
             if self.filterSyntaxComboBox.currentIndex() == 0:
                 self.completer_model.setStringList(
-                    (p.Name for p in self.currentModel._data)
+                    (p.name for p in self.currentModel._data)
                 )
             else:
                 self.completer_model.setStringList([""])
@@ -702,7 +715,9 @@ class Window(QtWidgets.QWidget):
                             data = json.loads(line)
                             try:
                                 if data["Name"] in installeds:
-                                    data["localversion"] = self.config.user_aurs[data["Name"]][1]
+                                    data["VersionLocal"] = self.config.user_aurs[
+                                        data["Name"]
+                                    ][1]
                                 yield data >> Package()
                             except:
                                 print(f"Error: Package no imported ! {data}")
@@ -720,12 +735,15 @@ class Window(QtWidgets.QWidget):
             if not self.proxyModel.rowCount():
                 exit(3)
             print(f"json to data duration: -- {(time.time() - start_time)} seconds --")
-            self.parent.setWindowTitle(f"{_('AUR list')} - {self.proxyModel.rowCount()}")
+            self.parent.setWindowTitle(
+                f"{_('AUR list')} - {self.proxyModel.rowCount()}"
+            )
             self.sourceView.sortByColumn(2, QtCore.Qt.AscendingOrder)
+
 
 def run(config):
     app = QtWidgets.QApplication(sys.argv)
-    set_lang(QtCore.QLocale().name().split('_')[1])
+    set_lang(QtCore.QLocale().name().split("_")[1])
     app.setWindowIcon(ICONS.load(ICONS.application))
 
     win = WinMain(config)

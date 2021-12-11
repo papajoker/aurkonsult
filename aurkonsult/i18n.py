@@ -5,9 +5,11 @@ import gettext
 
 __LANG_USER__ = ""
 
+
 def set_lang(lg):
     global __LANG_USER__
     __LANG_USER__ = lg
+
 
 '''
 def gettext_gettext(string: str) -> str:

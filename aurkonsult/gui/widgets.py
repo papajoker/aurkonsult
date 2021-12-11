@@ -2,7 +2,6 @@ import sys
 import os
 import time
 from PyQt5 import QtCore, QtGui, QtWidgets, QtDBus
-from ..core import Package
 from ..config import Configuration, UserConf
 from aurkonsult import api
 from aurkonsult import _
@@ -55,9 +54,8 @@ class ICONS:
             '<circle cx="43" cy="25" r="6" style="fill:#fa8865" />'
             '<circle cx="22" cy="50" r="9" style="fill:#63c605" />'
             '<circle cx="18" cy="90" r="11" style="fill:#1b89f3" />'
-            '</svg>'
+            "</svg>"
         )
-
 
 
 class packageTree(QtWidgets.QTreeView):
@@ -80,7 +78,6 @@ class packageTree(QtWidgets.QTreeView):
 # ---------------------------------------------------- #
 
 
-
 class WorkerSignal(QtCore.QObject):
     finished = QtCore.pyqtSignal(int)
 
@@ -88,20 +85,22 @@ class WorkerSignal(QtCore.QObject):
 class Worker(QtCore.QRunnable):
     """backgound download database"""
 
-    def __init__(self, fn_callback, config: Configuration): # , *args, **kwargs):
+    def __init__(self, fn_callback, config: Configuration):  # , *args, **kwargs):
         super(Worker, self).__init__()
         self.signal = WorkerSignal()
         self.signal.finished.connect(fn_callback)
         self.config = config
-        #self.args = args
-        #self.kwargs = kwargs
+        # self.args = args
+        # self.kwargs = kwargs
 
     def run(self):
         QtWidgets.QApplication.instance().setOverrideCursor(
             QtGui.QCursor(QtCore.Qt.WaitCursor)
         )
         try:
-            ret = api.download(self.config.db_file, self.config.url, self.config.db_time)
+            ret = api.download(
+                self.config.db_file, self.config.url, self.config.db_time
+            )
         finally:
             QtWidgets.QApplication.instance().restoreOverrideCursor()
         self.signal.finished.emit(ret)
@@ -142,9 +141,10 @@ def run_konsole(pkg_name, info: str = "i"):
             cmd = f"pamac info {pkg_name} --aur"
 
     remote_app = QtDBus.QDBusInterface(service, "/Sessions/1", "", my_dbus)
-    reply = remote_app.call(f"sendText", cmd)
+    reply = remote_app.call("sendText", cmd)
     if err := reply.errorMessage():
         print("Error Dbus send command: ", err)
+
 
 # ---------------------------------------------------- #
 
@@ -155,23 +155,18 @@ class dropButton(QtWidgets.QToolButton):  # QtWidgets.QPushButton):
         self.setAcceptDrops(True)
         self.setCheckable(False)
 
-    def dragEnterEvent(self, e):
-        if e.mimeData().hasFormat("text/plain"):
-            e.accept()
+    def dragEnterEvent(self, event):
+        if event.mimeData().hasFormat("text/plain"):
+            event.accept()
         else:
-            e.ignore()
+            event.ignore()
 
-    def dropEvent(self, e):
-        # self.setText(e.mimeData().text())
-        self.defaultAction().setData(e.mimeData().text())
-        """if self.defaultAction().text() == "Info":
-            run_konsole(e.mimeData().text(), "i")
-        if self.defaultAction().text() == "Install":
-            run_konsole(e.mimeData().text(), "")
-            return"""
+    def dropEvent(self, event):
+        self.defaultAction().setData(event.mimeData().text())
         self.defaultAction().activate(QtWidgets.QAction.ActionEvent())
 
-'''
+
+"""
 class DepsDialog(QtWidgets.QDialog):
     def __init__(self, parent, store):
         super().__init__(parent)
@@ -201,7 +196,8 @@ class DepsDialog(QtWidgets.QDialog):
             chart.addSeries(series)
         chart.createDefaultAxes()
         return chart
-'''
+"""
+
 
 class ConfigDialog(QtWidgets.QDialog):
     def __init__(self, parent=None):
@@ -234,19 +230,30 @@ class ConfigDialog(QtWidgets.QDialog):
 
         grid = QtWidgets.QGridLayout()
 
-        grid.addWidget(QtWidgets.QLabel(_("Extend Database") + ":"), 0, 0, QtCore.Qt.AlignRight)
+        grid.addWidget(
+            QtWidgets.QLabel(_("Extend Database") + ":"), 0, 0, QtCore.Qt.AlignRight
+        )
         grid.addWidget(self.form["extended"], 0, 1)
 
         grid.addWidget(QtWidgets.QLabel(_("Load") + ":"), 1, 0, QtCore.Qt.AlignRight)
         grid.addWidget(self.form["comment"], 1, 1)
 
-        grid.addWidget(QtWidgets.QLabel(_("Can load") + ":"), 2, 0, QtCore.Qt.AlignRight)
+        grid.addWidget(
+            QtWidgets.QLabel(_("Can load") + ":"), 2, 0, QtCore.Qt.AlignRight
+        )
         grid.addWidget(self.form["history"], 2, 1)
 
-        grid.addWidget(QtWidgets.QLabel(_("Propose app for install") + ":"), 3, 0, QtCore.Qt.AlignRight)
+        grid.addWidget(
+            QtWidgets.QLabel(_("Propose app for install") + ":"),
+            3,
+            0,
+            QtCore.Qt.AlignRight,
+        )
         grid.addWidget(self.form["pamac"], 3, 1)
 
-        grid.addWidget(QtWidgets.QLabel(_("Save Database in") + ":"), 4, 0, QtCore.Qt.AlignRight)
+        grid.addWidget(
+            QtWidgets.QLabel(_("Save Database in") + ":"), 4, 0, QtCore.Qt.AlignRight
+        )
         grid.addWidget(self.form["homecache"], 4, 1)
 
         formGroupBox = QtWidgets.QGroupBox(_("Preferences"))
@@ -255,12 +262,14 @@ class ConfigDialog(QtWidgets.QDialog):
         self.layout = QtWidgets.QVBoxLayout()
         self.layout.addWidget(formGroupBox)
         self.layout.addWidget(QtWidgets.QLabel(_("Save this config")))
-        self.layout.addWidget(QtWidgets.QLabel(_("Changes will be effective after reloading")))
+        self.layout.addWidget(
+            QtWidgets.QLabel(_("Changes will be effective after reloading"))
+        )
         self.layout.addWidget(self.buttonBox)
         self.setLayout(self.layout)
 
     def accept(self):
-        print("save prefs")
+        "save prefs in file in user home"
         conf = UserConf(Configuration.USER_CONF_FILE)
-        conf.save({k:v.isChecked() for k,v in self.form.items()})
+        conf.save({k: v.isChecked() for k, v in self.form.items()})
         super().accept()

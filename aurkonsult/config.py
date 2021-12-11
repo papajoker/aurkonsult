@@ -61,14 +61,14 @@ class Configuration:
         return Path.home() / f".cache/{self.db_name}.time"
 
     def load_user_conf(self):
-        """ load user configuration """
+        """load user configuration"""
         conf = UserConf(self.USER_CONF_FILE)
         datas = conf.read()
         for key in self.attributes:
             self.attributes[key] = datas.get(key, False)
 
     def load_user_params(self):
-        """ override .conf file """
+        """override .conf file"""
         if "--comments" in sys.argv:
             self.attributes["comment"] = True
         if "--ext" in sys.argv:
@@ -144,23 +144,26 @@ class Configuration:
                             break
 
 
-class UserConf():
-    """ read/save configuration in home file"""
+class UserConf:
+    """read/save configuration in home file"""
+
     def __init__(self, filename: Path) -> None:
         self.file = filename
+        if not self.file.exists():
+            self.file.touch()
 
     def read(self) -> dict:
         ret = {}
-        with self.file.open('r') as fin:
+        with self.file.open("r") as fin:
             for line in fin:
                 lines = line.strip().split("=", 1)
-                value = lines[1].lstrip()
-                value = True if value == '1' or value.capitalize() == "True" else value
-                value = False if value == '0' or value == "False" else value
+                value = lines[1].lstrip().capitalize()
+                value = True if value in ("1", "True") else value
+                value = False if value in ("0", "False") else value
                 ret[lines[0].rstrip()] = value
         return ret
 
     def save(self, datas: dict):
-        with self.file.open('w') as fin:
+        with self.file.open("w") as fin:
             for key, value in datas.items():
                 fin.write(f"{key} = {value}\n")

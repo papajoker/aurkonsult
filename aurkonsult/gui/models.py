@@ -3,6 +3,7 @@ import time
 from PyQt5 import QtCore, QtGui, QtWidgets
 from aurkonsult import Package
 
+
 class ModelBase(QtCore.QAbstractItemModel):
     """Absract class aur packages container"""
 
@@ -65,20 +66,20 @@ class ModelBase(QtCore.QAbstractItemModel):
         lists = self._origin
 
         if dep_nones:
-            lists = (pkg for pkg in lists if set(pkg.Depends).isdisjoint(dep_nones))
+            lists = (pkg for pkg in lists if set(pkg.depends).isdisjoint(dep_nones))
         if dep_wants:
-            lists = (pkg for pkg in lists if dep_wants.issubset(pkg.Depends))
+            lists = (pkg for pkg in lists if dep_wants.issubset(pkg.depends))
 
         if regex == "":
             self._data = list(lists)
         else:
             regex = regex.casefold()
             if target == 0:
-                self._data = [pkg for pkg in lists if regex in pkg.Name.lower()]
+                self._data = [pkg for pkg in lists if regex in pkg.name.lower()]
             else:
                 self._data = []
                 for pkg in lists:
-                    if regex in f"{pkg.Name} {pkg.Description}".casefold():
+                    if regex in f"{pkg.name} {pkg.description}".casefold():
                         self._data.append(pkg)
         self.layoutChanged.emit()
 
@@ -97,19 +98,19 @@ class ModelBase(QtCore.QAbstractItemModel):
 
         modifiers = QtWidgets.QApplication.keyboardModifiers()
         # ControlModifier, ShiftModifier, AltModifier , (Qt.ControlModifier | Qt.ShiftModifier) ...
-        # cmd = pkg.Name
+        # cmd = pkg.name
         # if modifiers == QtCore.Qt.ShiftModifier:
-        cmd = f"yay -Si {pkg.Name}"
+        cmd = f"yay -Si {pkg.name}"
         if "--pamac" in sys.argv:
-            cmd = f"pamac info {pkg.Name} --aur"
+            cmd = f"pamac info {pkg.name} --aur"
         if modifiers == QtCore.Qt.AltModifier:  # ControlModifier:
-            cmd = f"yay -S {pkg.Name} --asdeps"
+            cmd = f"yay -S {pkg.name} --asdeps"
             if "--pamac" in sys.argv:
-                cmd = f"pamac build {pkg.Name} -d"  # '-d' we use a test version !
+                cmd = f"pamac build {pkg.name} -d"  # '-d' we use a test version !
         mimedata.setData("text/plain", QtCore.QByteArray(bytes(cmd, encoding="utf8")))
         if modifiers == QtCore.Qt.ShiftModifier:
             mimedata.setData(
-                "text/uri-list", QtCore.QByteArray(bytes(pkg.URL, encoding="utf8"))
+                "text/uri-list", QtCore.QByteArray(bytes(pkg.url, encoding="utf8"))
             )
         return mimedata
 
@@ -123,7 +124,7 @@ class ModelBase(QtCore.QAbstractItemModel):
 
 class checkModel(ModelBase):
     ID_NAME, ID_LOCAL_VERSION, ID_VERSION, ID_DATE, ID_DESC = range(5)
-    _HEADERS = ("Name", "localversion", "Version", "LastModified", "Description")
+    _HEADERS = ("name", "version_local", "version", "last_modified", "description")
 
     def inject(self, datas, user_aurs):
         super().inject(datas)
@@ -132,21 +133,21 @@ class checkModel(ModelBase):
             return
 
         short = [p for p in self.pkg_installeds.keys()]
-        self._data = [p for p in self._origin if p.Name in short]
+        self._data = [p for p in self._origin if p.name in short]
         for pkg in self._data:
-            if pkg.Name in short:
-                pkg.set_localversion(self.pkg_installeds[pkg.Name][1])
-        pkg_last = {p.Name: p.Version for p in self._data if p.Name in short}
+            if pkg.name in short:
+                pkg.set_version_local(self.pkg_installeds[pkg.name][1])
+        pkg_last = {p.name: p.version for p in self._data if p.name in short}
 
         for _, pkg in self.pkg_installeds.items():
             try:
-                new = pkg_last[pkg[0]]
+                _ = pkg_last[pkg[0]]
             except KeyError:
                 # pkg is not in aur, add new to list
                 package = Package()
                 {
                     "Name": pkg[0],
-                    "localversion": pkg[1],
+                    "VersionLocal": pkg[1],
                     "Description": pkg[2],
                     "URL": pkg[3],
                 } >> package
@@ -163,26 +164,26 @@ class checkModel(ModelBase):
         if role == QtCore.Qt.DisplayRole:
             if index.column() == self.ID_DATE:
                 return f"{pkg:LastModified}"
-            elif index.column() == self.ID_VERSION and not pkg.Version:
-                return " ❌"   # 🔴 ❌
+            elif index.column() == self.ID_VERSION and not pkg.version:
+                return " ❌"  # 🔴 ❌
             return pkg[self._HEADERS[index.column()]]
 
         if role == QtCore.Qt.ToolTipRole:
-            if pkg.Version:
+            if pkg.version:
                 desc = ""
                 if pkg.vercmp < 0:
                     desc = "- New version in Aur"
                 elif pkg.vercmp > 0:
                     desc = "- Forward local version"
                 if desc:
-                    return f"{pkg.Name} {desc}"
+                    return f"{pkg.name} {desc}"
             else:
-                return f"{pkg.Name} not exists in Aur!"
+                return f"{pkg.name} not exists in Aur!"
 
-        '''if role == QtCore.Qt.DecorationRole:
+        """if role == QtCore.Qt.DecorationRole:
             # TODO ? if installed user-bookmarks-symbolic
-            if index.column() == self.ID_VERSION and not pkg.Version:
-                return ICONS.load(ICONS.warm)'''
+            if index.column() == self.ID_VERSION and not pkg.version:
+                return ICONS.load(ICONS.warm)"""
 
         return None
 
@@ -204,7 +205,7 @@ class packageModel(ModelBase):
     urlRole = QtCore.Qt.UserRole + 3
     matchRole = QtCore.Qt.UserRole + 100
     ID_NAME, ID_VERSION, ID_DATE, ID_URL, ID_DESC = range(5)
-    _HEADERS = ("Name", "Version", "LastModified", "URL", "Description")
+    _HEADERS = ("name", "version", "last_modified", "url", "description")
 
     def inject(self, datas):
         # self.layoutAboutToBeChanged.emit()
@@ -249,17 +250,17 @@ class packageModel(ModelBase):
             )  # pkg[self._HEADERS[index.column()]]
 
         if role == QtCore.Qt.ToolTipRole:
-            return f"{pkg.Name} {pkg.Version}"
+            return f"{pkg.name} {pkg.version}"
         if role == self.urlRole:
-            return pkg.URL
+            return pkg.url
         if role == self.nameRole:
-            return pkg.Name
+            return pkg.name
 
         return None
 
     def filterNews(self, time_since_update: int):
         self.layoutAboutToBeChanged.emit()
-        self._data = [p for p in self._origin if p.FirstSubmitted > time_since_update]
+        self._data = [p for p in self._origin if p.first_submitted > time_since_update]
         self.layoutChanged.emit()
 
 
@@ -269,7 +270,7 @@ class listDelegate(QtWidgets.QStyledItemDelegate):
     # GREEN = QtGui.QColor(0, 60, 0, 220)    # QtGui.QColor("green")
     NOW = time.time() - (3600 * 72)
 
-    def __init__(self, parent, time_since_update:int):
+    def __init__(self, parent, time_since_update: int):
         super().__init__(parent)
         self.time_since_update = time_since_update
         self.hfont = -1
@@ -297,16 +298,16 @@ class listDelegate(QtWidgets.QStyledItemDelegate):
                 option.palette.setBrush(
                     QtGui.QPalette.Text, QtGui.QPalette().highlight()
                 )
-            '''if index.column() == packageModel.ID_URL and pkg.URL.startswith("http"):
+            """if index.column() == packageModel.ID_URL and pkg.url.startswith("http"):
                 # TODO change cursor, text deco.. ?
-                pass'''
+                pass"""
             if index.column() == packageModel.ID_VERSION:
-                if not pkg:    # outofdate
+                if not pkg:  # outofdate
                     option.palette.setBrush(QtGui.QPalette.Text, self.OUTOFDATE)
                     option.font.setBold(True)
                 return
             if index.column() == packageModel.ID_DATE:
-                if pkg.FirstSubmitted > self.time_since_update:
+                if pkg.first_submitted > self.time_since_update:
                     option.palette.setBrush(
                         QtGui.QPalette.Text, QtGui.QPalette().highlight()
                     )
@@ -354,7 +355,7 @@ class checkDelegate(QtWidgets.QStyledItemDelegate):
                 self.hfont = option.font.pointSize()
             option.font.setPointSize(self.hfont)
             if index.column() == checkModel.ID_VERSION:
-                if not pkg or pkg.Version == "":
+                if not pkg or pkg.version == "":
                     option.palette.setBrush(QtGui.QPalette.Text, self.OUTOFDATE)
                     # option.font.setBold(True)
                 elif pkg > "aur":

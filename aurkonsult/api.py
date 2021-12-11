@@ -1,6 +1,6 @@
-'''
+"""
 interface with AUR
-'''
+"""
 import os
 import time
 import datetime
@@ -10,12 +10,13 @@ import gzip
 import platform
 from .config import Configuration
 
+
 def _get_user_agent():
     """http signature"""
     uname = platform.uname()
     return (
         f"{Configuration.PKGNAME}/{Configuration.VERSION} ({uname.system} {uname.release}; "
-        f"{uname.machine}; {os.environ['DESKTOP_SESSION']})"
+        f"{uname.machine}; {os.environ.get('DESKTOP_SESSION', '')})"
     )
 
 
@@ -49,10 +50,10 @@ def download(file_name: Path, url: str, time_file: Path) -> int:
     """download aur database in /tmp/"""
     print(file_name)
     modified_since = ""
-    check_time = True
+    # check_time = True
     dt_last_update = datetime.datetime.utcnow()
     if file_name.exists():
-        check_time = False
+        # check_time = False
         last_update = file_name.stat().st_mtime
         dt_last_update = datetime.datetime(*time.gmtime(last_update)[:6])
         print("dt_last_update (json age): ", dt_last_update)
