@@ -23,7 +23,7 @@ class ICONS:
     ireturn = ("go-previous-skip", "go-previous")
     warm = ("error", "emblem-unreadable")
     star = ("user-bookmarks-symbolic", "emblem-favorite")
-    download = ("download", "download")
+    download = ("download", "download")   # FIXME download not exists for no-plasma
 
     @classmethod
     def load(cls, name: tuple[str, str]) -> QtGui.QIcon:
@@ -106,7 +106,7 @@ class Worker(QtCore.QRunnable):
         self.signal.finished.emit(ret)
 
 
-def run_konsole(pkg_name, info: str = "i"):
+def run_konsole(pkg_name, use_pamac=False):
     if not pkg_name or not Configuration.KONSOLE_INSTALLED:
         return
     my_dbus = QtDBus.QDBusConnection.sessionBus()
@@ -130,15 +130,10 @@ def run_konsole(pkg_name, info: str = "i"):
         print("Error: not possible to load konsole!")
         return
 
-    dep = ""
-    if info != "i":
-        dep = "--asdeps"  # we use a test version !
-    cmd = f"yay -S{info} {pkg_name} {dep}"
-    if "--pamac" in sys.argv:
-        if info != "i":
-            cmd = f"pamac build {pkg_name} -d"  # '-d' we use a test version !
-        else:
-            cmd = f"pamac info {pkg_name} --aur"
+    dep = "--asdeps"
+    cmd = f"yay -S {pkg_name} {dep}"
+    if use_pamac:
+        cmd = f"pamac build {pkg_name} -d"  # '-d' we use a test version !
 
     remote_app = QtDBus.QDBusInterface(service, "/Sessions/1", "", my_dbus)
     reply = remote_app.call("sendText", cmd)

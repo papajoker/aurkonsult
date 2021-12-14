@@ -11,7 +11,7 @@ import platform
 from .config import Configuration
 
 
-def _get_user_agent():
+def _get_user_agent() -> str:
     """http signature"""
     uname = platform.uname()
     return (

@@ -211,7 +211,7 @@ class WinMain(QtWidgets.QMainWindow):
         if not self.win.index.isValid():
             return
         if pkg := self.win.index.internalPointer():
-            widgets.run_konsole(pkg.name, "")
+            widgets.run_konsole(pkg.name, self.win.config.attributes["pamac"])
 
     def onConfig(self):
         """dialog app preferences"""
@@ -631,7 +631,7 @@ class Window(QtWidgets.QWidget):
             self.tabs.setCurrentIndex(1)
 
         if action == aInstall:
-            widgets.run_konsole(pkg.name, "")
+            widgets.run_konsole(pkg.name, self.win.config.attributes["pamac"])
 
     def textFilterChanged(self):
         if not isinstance(self.currentModel, models.packageModel):
@@ -677,7 +677,6 @@ class Window(QtWidgets.QWidget):
             self.setSourceModel(self.config.db_file)
         else:
             self.proxyModel._data = self.proxyModel._origin
-            pass
         QtWidgets.QApplication.instance().restoreOverrideCursor()
         self.proxyModel.layoutChanged.emit()
         self.sourceView.setModel(self.proxyModel)

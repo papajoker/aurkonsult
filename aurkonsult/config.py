@@ -4,6 +4,8 @@ import time
 from pathlib import Path
 from typing import Generator
 
+PkgDesc = tuple[str, str, str, str, str]  # values in local desc package file
+
 
 class Configuration:
     VERSION = "0.1.30"
@@ -24,7 +26,7 @@ class Configuration:
         self.load_user_params()
         self.time_since_update = int(time.time() - (3600 * 48))
         start_time = time.time()
-        # NOTE : never reload (bab if pkg installed since ; bof: version is the last)
+        # NOTE : never reload (bad if pkg installed since; bof: version is the last)
         self.user_aurs = self.load_aur_user()
         print(
             "get aur pkgs installed, duration: "
@@ -77,8 +79,6 @@ class Configuration:
             self.attributes["pamac"] = True
         if "--history" in sys.argv:
             self.attributes["history"] = True
-        if "--pamac" in sys.argv:
-            self.attributes["pamac"] = True
         if "--homecache" in sys.argv:
             self.attributes["homecache"] = True
 
@@ -109,14 +109,14 @@ class Configuration:
         return int(old_update)
 
     @staticmethod
-    def load_aur_user() -> dict[str, tuple[str, str, str, str, str]]:
+    def load_aur_user() -> dict[str, PkgDesc]:
         ret = {}
         for pkg in Configuration._get_aur_pkgs():
             ret[pkg[0]] = pkg
         return ret
 
     @staticmethod
-    def _get_aur_pkgs() -> Generator[tuple, None, None]:
+    def _get_aur_pkgs() -> Generator[PkgDesc, None, None]:
         """pkg installed with no packager
         not have all pkg not in repot !
         diff : old packages in repot (as yaourt,...)
@@ -129,19 +129,20 @@ class Configuration:
         for desc_file in Path("/var/lib/pacman/local/").glob("*/desc"):
             with desc_file.open("r") as file:
                 for line in file:
-                    if line == "%NAME%\n":
-                        pkg = (str(next(file)).rstrip(),)
-                    elif line == "%VERSION%\n":
-                        pkg += (str(next(file)).rstrip(),)
-                    elif line == "%DESC%\n":
-                        pkg += (str(next(file)).rstrip(),)
-                    elif line == "%URL%\n":
-                        pkg += (str(next(file)).rstrip(),)
-                    elif line == "%VALIDATION%\n":
-                        line = str(next(file)).rstrip()
-                        if line == "none":
-                            yield pkg
-                            break
+                    match line:
+                        case "%NAME%\n":
+                            pkg = (str(next(file)).rstrip(),)
+                        case "%VERSION%\n":
+                            pkg += (str(next(file)).rstrip(),)
+                        case "%DESC%\n":
+                            pkg += (str(next(file)).rstrip(),)
+                        case "%URL%\n":
+                            pkg += (str(next(file)).rstrip(),)
+                        case "%VALIDATION%\n":
+                            line = str(next(file)).rstrip()
+                            if line == "none":
+                                yield PkgDesc(pkg)
+                                break
 
 
 class UserConf:

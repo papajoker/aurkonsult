@@ -83,7 +83,7 @@ class Package:
         if self.package_base == self.name:
             self.package_base = ""
 
-    def is_installed(self):
+    def is_installed(self) -> bool:
         return bool(self.version_local)
 
     def set_version_local(self, version):
@@ -96,26 +96,25 @@ class Package:
         """if not pkg then is_out_of_date"""
         return bool(self.out_of_date)
 
-    def __gt__(self, compare: str):
+    def __gt__(self, compare: str) -> bool:
         if compare == "aur":
             return self.vercmp < 0
-        else:
-            raise TypeError("Compare only local version vs aur version")
+        raise TypeError("Compare only local version vs aur version")
 
-    def __lt__(self, compare: str):
+    def __lt__(self, compare: str) -> bool:
         if compare == "aur":
             return self.vercmp > 0
-        else:
-            raise TypeError("Compare only local version vs aur version")
+        raise TypeError("Compare only local version vs aur version")
 
     def __rrshift__(self, other):
         """>> asign fields in Package"""
-        if isinstance(other, dict):
-            self.populate(other)
-        elif isinstance(other, str):
-            self.populate(json.loads(other))
-        else:
-            raise TypeError("entry is not compatible with package")
+        match other:
+            case dict():
+                self.populate(other)
+            case str():
+                self.populate(json.loads(other))
+            case _:
+                raise TypeError("entry is not compatible with package")
         return self
 
     def fields(self) -> Generator[tuple[str, Any], None, None]:
@@ -123,7 +122,7 @@ class Package:
         for k in self.__slots__:
             yield k, getattr(self, k, "")
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         ret = ""
         for k, value in self.fields():
             if isinstance(value, str):
@@ -136,47 +135,45 @@ class Package:
         """format output for f-string
         usage: f"pkg:LastModified"
         """
-        if not format_spec or format_spec == "s":
-            return str(self)
-        if format_spec == "LastModified":
-            return self.epoch_to_str(self.last_modified)
-        if format_spec == "FirstSubmitted":
-            return self.epoch_to_str(self.first_submitted)
-        if format_spec == "Popularity":
-            return f"{float(self.popularity):.5f}"
-        if format_spec == "URL":
-            if not self.url:
-                return ""
-            else:
-                return f'<a href="{self.url}">{self.url}</a>'
-        if format_spec == "hostname":
-            if url := self.url:
-                if url := parse.urlparse(url).hostname:
-                    url = url.split(".", 3)
-                    return ".".join(url[-2:])
-            return " -"
-        if format_spec == "PKGBUILD":
-            url = "https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h="
-            return f'<a href="{url}{self.name}">{url}{self.name}</a>'
-        if format_spec == "Aur":
-            url = "https://aur.archlinux.org/packages/"
-            return f'<a href="{url}{self.name}/">{url}{self.name}</a>'
-        if format_spec == "OutOfDate":
-            return (
-                '<b style="color:red">Flagged out-of-date</b>'
-                if self.out_of_date
-                else ""
-            )
+        match format_spec:
+            case "" | "s":
+                return str(self)
+            case "LastModified":
+                return self.epoch_to_str(self.last_modified)
+            case "FirstSubmitted":
+                return self.epoch_to_str(self.first_submitted)
+            case "Popularity":
+                return f"{float(self.popularity):.5f}"
+            case "URL":
+                return (
+                    f'<a href="{self.url}">{self.url}</a>'
+                    if self.url
+                    else ""
+                )
+            case "hostname":
+                if url := self.url:
+                    if url := parse.urlparse(url).hostname:
+                        url = url.split(".", 3)
+                        return ".".join(url[-2:])
+                return " -"
+            case "PKGBUILD":
+                url = "https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h="
+                return f'<a href="{url}{self.name}">{url}{self.name}</a>'
+            case "Aur":
+                url = "https://aur.archlinux.org/packages/"
+                return f'<a href="{url}{self.name}/">{url}{self.name}</a>'
+            case "OutOfDate":
+                return (
+                    '<b style="color:red">Flagged out-of-date</b>'
+                    if self.out_of_date
+                    else ""
+                )
         raise ValueError(f"Unknown format '{format_spec}' for object `Package`")
 
-    def __getattr__(self, name: str):
-        """
-        if exists some optional fields, return as empty
-        # TODO usefull this Pacage.method ?
-        """
+    def __getattr__(self, name: str) -> Exception:
         raise Exception(f"package Field not found: {name}")
 
-    def __getitem__(self, index):
+    def __getitem__(self, index) -> Any | Exception:
         try:
             return getattr(self, index)
         except TypeError:

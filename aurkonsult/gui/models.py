@@ -1,5 +1,6 @@
 import sys
 import time
+from typing import Any
 from PyQt5 import QtCore, QtGui, QtWidgets
 from aurkonsult import Package
 
@@ -90,6 +91,7 @@ class ModelBase(QtCore.QAbstractItemModel):
         return QtCore.Qt.CopyAction | QtCore.Qt.LinkAction  # | QtCore.Qt.MoveAction
 
     def mimeData(self, indexes) -> QtCore.QMimeData:
+        """Set text dadas for drag&drop"""
         mimedata = QtCore.QMimeData()
         index = indexes[0]
         pkg: Package = index.internalPointer()
@@ -115,7 +117,8 @@ class ModelBase(QtCore.QAbstractItemModel):
         return mimedata
 
     @classmethod
-    def pkgVal(cls, pkg, index):
+    def pkgVal(cls, pkg, index) -> Any:
+        """Get cell value from column index"""
         try:
             return pkg[cls._HEADERS[index]]
         except:
@@ -123,6 +126,7 @@ class ModelBase(QtCore.QAbstractItemModel):
 
 
 class checkModel(ModelBase):
+    """treeview Compare packages, local to aur"""
     ID_NAME, ID_LOCAL_VERSION, ID_VERSION, ID_DATE, ID_DESC = range(5)
     _HEADERS = ("name", "version_local", "version", "last_modified", "description")
 
@@ -161,24 +165,26 @@ class checkModel(ModelBase):
         if not pkg:
             pkg = self._data[index.row()]
 
-        if role == QtCore.Qt.DisplayRole:
-            if index.column() == self.ID_DATE:
-                return f"{pkg:LastModified}"
-            elif index.column() == self.ID_VERSION and not pkg.version:
-                return " ❌"  # 🔴 ❌
-            return pkg[self._HEADERS[index.column()]]
+        match role:
+            case QtCore.Qt.DisplayRole:
+                match index.column():
+                    case self.ID_DATE:
+                        return f"{pkg:LastModified}"
+                    case self.ID_VERSION if not pkg.version:
+                        return " ❌"  # 🔴 ❌
+                return pkg[self._HEADERS[index.column()]]
 
-        if role == QtCore.Qt.ToolTipRole:
-            if pkg.version:
-                desc = ""
-                if pkg.vercmp < 0:
-                    desc = "- New version in Aur"
-                elif pkg.vercmp > 0:
-                    desc = "- Forward local version"
-                if desc:
-                    return f"{pkg.name} {desc}"
-            else:
-                return f"{pkg.name} not exists in Aur!"
+            case QtCore.Qt.ToolTipRole:
+                if pkg.version:
+                    desc = ""
+                    if pkg.vercmp < 0:
+                        desc = "- New version in Aur"
+                    elif pkg.vercmp > 0:
+                        desc = "- Forward local version"
+                    if desc:
+                        return f"{pkg.name} {desc}"
+                else:
+                    return f"{pkg.name} not exists in Aur!"
 
         """if role == QtCore.Qt.DecorationRole:
             # TODO ? if installed user-bookmarks-symbolic
@@ -196,6 +202,7 @@ class checkModel(ModelBase):
 
 
 class packageModel(ModelBase):
+    """treeview list aur packages"""
     """
     https://doc.qt.io/qt-5/qabstractitemmodel.html
     """
@@ -221,7 +228,7 @@ class packageModel(ModelBase):
             return ret
         return None
 
-    def data(self, index, role=QtCore.Qt.DisplayRole):
+    def data(self, index, role=QtCore.Qt.DisplayRole) -> str | None:
         if not index.isValid():
             return None
         super().data(index, role)
@@ -239,22 +246,23 @@ class packageModel(ModelBase):
         else:
             pkg = self._data[index.row()]
 
-        if role == QtCore.Qt.DisplayRole:
-            if index.column() == self.ID_URL:
-                return f"{pkg:hostname}"
-            if index.column() == self.ID_DATE:
-                return f"{pkg:LastModified}"
+        match role:
+            case QtCore.Qt.DisplayRole:
+                if index.column() == self.ID_URL:
+                    return f"{pkg:hostname}"
+                if index.column() == self.ID_DATE:
+                    return f"{pkg:LastModified}"
 
-            return self.pkgVal(
-                pkg, index.column()
-            )  # pkg[self._HEADERS[index.column()]]
+                return self.pkgVal(
+                    pkg, index.column()
+                )  # pkg[self._HEADERS[index.column()]]
 
-        if role == QtCore.Qt.ToolTipRole:
-            return f"{pkg.name} {pkg.version}"
-        if role == self.urlRole:
-            return pkg.url
-        if role == self.nameRole:
-            return pkg.name
+            case QtCore.Qt.ToolTipRole:
+                return f"{pkg.name} {pkg.version}"
+            case self.urlRole:
+                return pkg.url
+            case self.nameRole:
+                return pkg.name
 
         return None
 
@@ -265,6 +273,7 @@ class packageModel(ModelBase):
 
 
 class listDelegate(QtWidgets.QStyledItemDelegate):
+    """Howto display treeview aur packages"""
     # https://doc.qt.io/qtforpython-5/PySide2/QtGui/QColor.html
     OUTOFDATE = QtGui.QColor(160, 0, 0, 220)  # QtGui.QColor("salmon")
     # GREEN = QtGui.QColor(0, 60, 0, 220)    # QtGui.QColor("green")
@@ -279,6 +288,7 @@ class listDelegate(QtWidgets.QStyledItemDelegate):
         self.view = parent.viewport()
 
     def initStyleOption(self, option, index):
+        """Set cell style"""
         if not index.isValid():
             return None
         super(listDelegate, self).initStyleOption(option, index)
@@ -331,7 +341,7 @@ class listDelegate(QtWidgets.QStyledItemDelegate):
 
 
 class checkDelegate(QtWidgets.QStyledItemDelegate):
-    """view : check differences local/aur"""
+    """Howto display treeview : check differences local/aur"""
 
     OUTOFDATE = QtGui.QColor(160, 0, 0, 220)  # QtGui.QColor("salmon")
 
@@ -340,6 +350,7 @@ class checkDelegate(QtWidgets.QStyledItemDelegate):
         self.hfont = -1
 
     def initStyleOption(self, option, index):
+        """Set cell style"""
         if not index.isValid():
             return None
         super(checkDelegate, self).initStyleOption(option, index)
