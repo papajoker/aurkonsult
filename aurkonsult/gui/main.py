@@ -631,7 +631,7 @@ class Window(QtWidgets.QWidget):
             self.tabs.setCurrentIndex(1)
 
         if action == aInstall:
-            widgets.run_konsole(pkg.name, self.win.config.attributes["pamac"])
+            widgets.run_konsole(pkg.name, self.config.attributes["pamac"])
 
     def textFilterChanged(self):
         if not isinstance(self.currentModel, models.packageModel):

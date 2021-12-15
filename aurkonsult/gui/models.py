@@ -232,13 +232,9 @@ class packageModel(ModelBase):
         if not index.isValid():
             return None
         super().data(index, role)
-        # if index.column() > 0:
-        #    print("model data", index.column(), role)
         if not index.isValid():
             print("data(): not index.isValid")
             return None
-        # print(QtCore.Qt.DisplayRole, self.nameRole, self.urlRole)
-        # print("data:", index.row(), index.column(), "role:", role)
 
         pkg: Package
         if index.internalPointer():
@@ -255,7 +251,7 @@ class packageModel(ModelBase):
 
                 return self.pkgVal(
                     pkg, index.column()
-                )  # pkg[self._HEADERS[index.column()]]
+                )
 
             case QtCore.Qt.ToolTipRole:
                 return f"{pkg.name} {pkg.version}"
@@ -312,7 +308,7 @@ class listDelegate(QtWidgets.QStyledItemDelegate):
                 # TODO change cursor, text deco.. ?
                 pass"""
             if index.column() == packageModel.ID_VERSION:
-                if not pkg:  # outofdate
+                if -pkg:  # is outofdate
                     option.palette.setBrush(QtGui.QPalette.Text, self.OUTOFDATE)
                     option.font.setBold(True)
                 return
@@ -366,7 +362,7 @@ class checkDelegate(QtWidgets.QStyledItemDelegate):
                 self.hfont = option.font.pointSize()
             option.font.setPointSize(self.hfont)
             if index.column() == checkModel.ID_VERSION:
-                if not pkg or pkg.version == "":
+                if -pkg or pkg.version == "":
                     option.palette.setBrush(QtGui.QPalette.Text, self.OUTOFDATE)
                     # option.font.setBold(True)
                 elif pkg > "aur":
