@@ -1,0 +1,49 @@
+pkgname=aurkonsult
+pkgver=0.1.30
+pkgrel=1
+arch=('x86_64')
+pkgdesc="Aur Explorator - Qt Gui without rpc for plasma"
+url="https://github.com/papajoker/aurkonsult"
+depends=('python-pyqt5')
+
+source=("https://github.com/papajoker/${pkgname}/archive/refs/tags/${pkgver}.tar.gz")
+sha256sums=('7758c45341d1370f1bdce7bb78e9371197f7f00c4f6107706f667b24e8e1227c')
+
+
+setdesktop() {
+string=$(cat << EOF
+[Desktop Entry]
+Name=AurKonsult
+Comment=List aur packages in Qt Gui
+Path=/usr/share/${pkgname}/
+Exec=/usr/share/${pkgname}/aurk
+Terminal=false
+Type=Application
+Icon=/usr/share/icons/hicolor/scalable/apps/aurkonsult.svg
+Categories=System;
+Keywords=aur;package;yay;
+
+EOF
+)
+echo "$string" > "$1"
+}
+
+package() {
+    cd "${srcdir}/${pkgname}-${pkgver}"
+    install -d "${pkgdir}/usr/share/icons/hicolor/scalable/apps/"
+    install -d "${pkgdir}/usr/share/applications/"
+    install -d "${pkgdir}/usr/share/${pkgname}/aurkonsult"
+    
+    install -m755 aurkonsult.py "${pkgdir}/usr/share/${pkgname}/aurk"
+    cp -r aurkonsult/* "${pkgdir}/usr/share/${pkgname}/aurkonsult"
+    cp -r aurkonsult.svg "${pkgdir}/usr/share/icons/hicolor/scalable/apps/"
+    setdesktop "${pkgdir}/usr/share/applications/${pkgname}.desktop"
+
+    cd build/po
+    for lang in $(ls *.po); do
+        echo "lang: $lang"
+        lang=${lang::-3}
+        install -dm755 $pkgdir/usr/share/locale/${lang//_/-}/LC_MESSAGES
+        msgfmt -c -o $pkgdir/usr/share/locale/${lang//_/-}/LC_MESSAGES/$pkgname.mo $lang.po
+    done
+}
