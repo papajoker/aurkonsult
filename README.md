@@ -21,5 +21,5 @@ Database in:
 drag&drop:
 
  - default : yay -Si
- - `ALT` : pacmac -S
+ - `ALT` : yay -S
  - `SHIFT` : url project
