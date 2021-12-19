@@ -267,7 +267,7 @@ def getAllDependencies(package_list) ->dict:
     return sort_orders
 """
 
-cdll.LoadLibrary("libalpm.so")
+#cdll.LoadLibrary("libalpm.so")
 libalpm = CDLL("libalpm.so")
 
 
